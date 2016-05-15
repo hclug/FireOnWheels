@@ -1,4 +1,6 @@
-﻿using FireOnWheels.Messaging;
+﻿using System;
+using System.Threading.Tasks;
+using FireOnWheels.Messaging;
 using FireOnWheels.Registration.Web.Messages;
 using FireOnWheels.Registration.Web.ViewModels;
 using Microsoft.AspNet.Mvc;
@@ -17,12 +19,15 @@ namespace FireOnWheels.Registration.Web.Controllers
         }
 
         [HttpPost]
-        public string RegisterOrder(OrderViewModel model) {
+        public async Task<IActionResult> RegisterOrder(OrderViewModel model) {
             var registerOrderCommand = new RegisterOrderCommand(model);
-            using(var rabbitCtlr = new RabbitMqManager()) {
-                rabbitCtlr.SendRegisterOrderCommand(registerOrderCommand);
-            }
-            return "Thanks!";
+            var bus = BusConfigurator.ConfigureBus();
+            var sendToUri = new Uri($"{RabbitMqConstants.RabbitMqUri}{RabbitMqConstants.RegisterOrderServiceQueue}");
+            var endPoint = await bus.GetSendEndpoint(sendToUri);
+
+            await endPoint.Send<FireOnWheels.Messaging.Commands.IRegisterOrderCommand>(
+                registerOrderCommand);
+            return View("Thanks");
         }
 
         public IActionResult About()

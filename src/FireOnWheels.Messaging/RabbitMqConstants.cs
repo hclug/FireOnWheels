@@ -8,17 +8,13 @@ namespace FireOnWheels.Messaging
     public static class RabbitMqConstants
     {
         public const string RabbitMqUri =
-            "amqp://fire:fire@localhost:5672/";
+            "rabbitmq://localhost/fireonwheels/";
+        public const string UserName = "fire";
+        public const string Password = "fire";
         public const string JsonMimeType = "application/json";
 
-        public const string RegisterOrderExchange =
-            "fireonwheels.registerorder.exchange";
-        public const string RegisterOrderQueue =
-            "fireonwheels.registerorder.queue";
-
-        public const string OrderRegisteredExchange =
-            "fireonwheels.orderegistered.exchange";
-        public const string OrderRegisteredNotificationQueue =
-            "fireonwheels.orderregistered.notification.queue";
+        public const string RegisterOrderServiceQueue = "registerorder.service";
+        public const string NotificationServiceQueue = "notification.service";
+        public const string FinanceServiceQueue = "finance.service";
     }
 }
