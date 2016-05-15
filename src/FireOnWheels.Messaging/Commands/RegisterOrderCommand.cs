@@ -1,4 +1,6 @@
-﻿namespace FireOnWheels.Messaging.Commands
+﻿using System;
+
+namespace FireOnWheels.Messaging.Commands
 {
     public class RegisterOrderCommand : IRegisterOrderCommand
     {
@@ -12,6 +14,8 @@
             DeliveryAddress = deliveryAddress;
             DeliveryCity = deliveryCity;
         }
+
+        public Guid CorrelationId => Guid.NewGuid();
         public string PickupName { get;}
         public string PickupAddress { get; }
         public string PickupCity { get;}

@@ -15,6 +15,9 @@ namespace FireOnWheels.Messaging
                 new ConnectionFactory { Uri = RabbitMqConstants.RabbitMqUri };
             var connection = connectionFactory.CreateConnection();
             channel = connection.CreateModel();
+            channel.ConfirmSelect();
+            channel.BasicAcks += HandleAcks;
+            channel.BasicNacks += HandleNacks;
             connection.AutoClose = true;
         }
 
@@ -35,7 +38,7 @@ namespace FireOnWheels.Messaging
             var serializedCommand = JsonConvert.SerializeObject(command);
             var messageProperties = channel.CreateBasicProperties();
             messageProperties.ContentType = RabbitMqConstants.JsonMimeType;
-
+            messageProperties.CorrelationId = command.CorrelationId.ToString("N");
             channel.BasicPublish(
                  exchange: RabbitMqConstants.RegisterOrderExchange,
                  routingKey: "",
@@ -45,11 +48,11 @@ namespace FireOnWheels.Messaging
         }
 
         public void SendOrderRegisteredEvent(IOrderRegisteredEvent command) {
-                channel.ExchangeDeclare(
-                exchange: RabbitMqConstants.OrderRegisteredExchange,
-                type: ExchangeType.Fanout
-                , durable: true
-            );
+            channel.ExchangeDeclare(
+            exchange: RabbitMqConstants.OrderRegisteredExchange,
+            type: ExchangeType.Fanout
+            , durable: true
+        );
 
             channel.QueueDeclare(
                 queue: RabbitMqConstants.OrderRegisteredNotificationQueue
@@ -77,13 +80,22 @@ namespace FireOnWheels.Messaging
             channel.BasicAck(deliveryTag: deliveryTag, multiple: false);
         }
 
+        private void HandleNacks(object sender, RabbitMQ.Client.Events.BasicNackEventArgs e) {
+           
+        }
+
+        private void HandleAcks(object sender, RabbitMQ.Client.Events.BasicAckEventArgs e) {
+            
+        }
+
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {
                 if (disposing) {
-                    channel.Close();
+                    if (channel.IsOpen)
+                        channel.Close();
                 }
                 disposedValue = true;
             }

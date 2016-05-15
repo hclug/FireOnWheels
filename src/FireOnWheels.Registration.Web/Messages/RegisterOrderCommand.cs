@@ -12,6 +12,7 @@ namespace FireOnWheels.Registration.Web.Messages
             this.viewModel = model;
         }
 
+        public Guid CorrelationId => Guid.NewGuid();
         public string PickupName => viewModel.PickupLocation.Contact;
         public string PickupAddress => viewModel.PickupLocation.Address;
         public string PickupCity => viewModel.PickupLocation.City;
