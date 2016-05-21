@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FireOnWheels.Messaging;
+using FireOnWheels.Messaging.Events;
 using MassTransit;
 
 namespace FireOnWheels.Notification.Service
